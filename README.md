@@ -30,8 +30,10 @@ Nested geometry and creator are typed. Optional image fields are nullable; missi
 
 The standalone client adds no caching/retries: inject HttpClient decorators. The bundle configures bounded GET retries. No default cache avoids cross-account mixing and stale signed URLs. Exceptions preserve HTTP/API codes, trace ID and Retry-After; messages are sanitized and omit the underlying transport exception. Do not dump HTTP debug traces or client objects containing credentials.
 
-See [the supported contract](docs/api-contract.md). This is a compatible subset, not a complete SDK. Image byte downloads, uploads, OAuth, map features/detections, radius searches and vector tiles are unsupported.
+See [the supported contract](docs/api-contract.md). This is a compatible subset, not a complete SDK. Image byte downloads, uploads, OAuth, map features/detections, vector tiles are unsupported.
 
 Respect per-image licensing, photographer credit, and Mapillary attribution. Public image reads use the access token; not the client secret.
 
 Tests: `composer install`, then `vendor/bin/phpunit` (or use the mono root runner with `-c lib/mapillary/phpunit.xml.dist`). Tests run offline.
+
+Nearby search: `nearbyImages(new NearbySearch(47.507, 19.046, radius: 50, limit: 20))` returns at most 100 candidates within 50 meters, ranked by the server with panorama preference. The API does not document a panorama-only filter for radius requests. The command `mapillary:images:nearby 47.507 19.046 --limit=20` filters the returned candidates locally to panoramas; `--include-flat` shows all. Neither radius nor bbox samples guarantee completeness.

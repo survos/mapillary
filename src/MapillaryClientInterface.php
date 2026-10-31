@@ -7,6 +7,7 @@ namespace Survos\Mapillary;
 use Survos\Mapillary\Model\Image;
 use Survos\Mapillary\Model\ImagePage;
 use Survos\Mapillary\Request\ImageSearch;
+use Survos\Mapillary\Request\NearbySearch;
 
 interface MapillaryClientInterface
 {
@@ -14,6 +15,8 @@ interface MapillaryClientInterface
 
     /** Creator-only cursor pagination; bbox queries return one bounded page. @return \Generator<int, Image> */
     public function iterateImages(ImageSearch $search): \Generator;
+
+    public function nearbyImages(NearbySearch $search): ImagePage;
 
     public function getImage(string $id): Image;
 

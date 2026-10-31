@@ -11,6 +11,7 @@ use Survos\Mapillary\Model\Creator;
 use Survos\Mapillary\Model\Point;
 use Survos\Mapillary\Request\BoundingBox;
 use Survos\Mapillary\Request\ImageSearch;
+use Survos\Mapillary\Request\NearbySearch;
 use Survos\Mapillary\SerializerFactory;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -133,6 +134,29 @@ final class MapillaryClientTest extends TestCase
         $this->expectException(MapillaryException::class);
         $this->expectExceptionMessage('invalid JSON');
         $client->getImage('123');
+    }
+
+    public function testNearbySearchUsesDocumentedRadiusParameters(): void
+    {
+        $http = new MockHttpClient(function (string $method, string $url): MockResponse {
+            parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
+            self::assertSame('47.507', $query['lat']);
+            self::assertSame('19.046', $query['lng']);
+            self::assertSame('50', $query['radius']);
+            self::assertArrayNotHasKey('bbox', $query);
+            self::assertArrayNotHasKey('is_pano', $query);
+
+            return new MockResponse(json_encode(['data' => [self::image()]], JSON_THROW_ON_ERROR));
+        });
+        $page = (new MapillaryClient($http, SerializerFactory::create(), self::TOKEN))->nearbyImages(new NearbySearch(47.507, 19.046));
+        self::assertTrue($page->images[0]->isPano);
+        self::assertNull($page->after);
+    }
+
+    public function testNearbyRadiusAboveApiLimitFails(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new NearbySearch(47.507, 19.046, radius: 51);
     }
 
     public function testLargeBoundingBoxIsRejected(): void

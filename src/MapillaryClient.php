@@ -8,6 +8,7 @@ use Survos\Mapillary\Exception\MapillaryException;
 use Survos\Mapillary\Model\Image;
 use Survos\Mapillary\Model\ImagePage;
 use Survos\Mapillary\Request\ImageSearch;
+use Survos\Mapillary\Request\NearbySearch;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -82,6 +83,14 @@ final readonly class MapillaryClient implements MapillaryClientInterface
         } while (null !== $after);
     }
 
+    public function nearbyImages(NearbySearch $search): ImagePage
+    {
+        $payload = $this->request('images', $search->toQuery() + ['fields' => self::IMAGE_FIELDS]);
+        $images = array_map($this->image(...), $this->collection($payload));
+
+        return new ImagePage($images, null, count($images) >= $search->limit);
+    }
+
     public function getImage(string $id): Image
     {
         if (!ctype_digit($id)) {
@@ -107,7 +116,7 @@ final readonly class MapillaryClient implements MapillaryClientInterface
         return $ids;
     }
 
-    /** @param array<string, int|string> $query @return array<string, mixed> */
+    /** @param array<string, float|int|string> $query @return array<string, mixed> */
     private function request(string $path, array $query): array
     {
         try {

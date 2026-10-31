@@ -14,7 +14,10 @@ This is a contract summary, not an OpenAPI schema or a complete SDK.
 - Geometry is GeoJSON Point; creator contains string ID and username. Camera types include perspective, fisheye, equirectangular and spherical. Preserve future strings.
 - Width/height describe the original upload. Thumbnail URLs, including original-width rendition, are temporary, not durable identity. Quality score may be null; some fields may be absent.
 - Rate limits: entity 60,000/min/app; search 10,000/min/app; tiles 50,000/day. Limits are not throughput targets. Rate error uses code 4 and can include error_subcode, fbtrace_id and is_transient.
-- Unsupported: OAuth exchange/refresh, uploads, image byte downloads, radius search, vector-tile decoding, detection/map-feature queries, and city-scale inventory.
+- Unsupported: OAuth exchange/refresh, uploads, image byte downloads, vector-tile decoding, detection/map-feature queries, and city-scale inventory.
 
 Terms: https://www.mapillary.com/terms (effective February 15, 2024).
 User imagery is generally CC BY-SA 4.0 unless stated otherwise. Preserve source and photographer; self-hosted imagery also needs Mapillary logo/link attribution. API access is separate from content licensing.
+
+- `GET /images?lat=...&lng=...&radius=50&limit=20`: radius <= 50 meters, limit <= 100; cannot combine with bbox/sequence IDs. No documented panorama-only radius filter; candidates are ranked with panorama preference. Supported as `NearbySearch`.
+- Live check 2026-10-31: bbox requests in central Budapest returned HTTP 500/API 1, even with only ID selected and a small bbox. Radius requests at 47.507,19.046 succeeded. This provider behavior is not hidden or treated as an empty result.
