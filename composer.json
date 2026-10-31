@@ -1,0 +1,19 @@
+{
+    "name": "survos/mapillary",
+    "description": "Typed read-only Mapillary API v4 image client using Symfony HttpClient and Serializer.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.5",
+        "symfony/http-client-contracts": "^3.6",
+        "symfony/property-access": "^8.1",
+        "symfony/property-info": "^8.1",
+        "symfony/serializer": "^8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.0",
+        "symfony/http-client": "^8.1"
+    },
+    "autoload": {"psr-4": {"Survos\\Mapillary\\": "src/"}},
+    "autoload-dev": {"psr-4": {"Survos\\Mapillary\\Tests\\": "tests/"}}
+}
